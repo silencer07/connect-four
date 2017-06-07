@@ -12,7 +12,14 @@ export default class ConnectFourCanvas extends Component {
             <div className="row">
                 <div className="col-md-12 col-lg-10 offset-lg-1">
                     {
-                        _.range(7).map((x) => <button key={`btn-${x}`} className="btn-place-token" onClick={() => this.dropToken(x)}>{x}</button>)
+                        _.range(7).map((x) =>
+                            <button key={`btn-${x}`} className="btn-place-token"
+                                onClick={() => this.dropToken(x)}
+                                disabled={this.refs[`col-${x}`] ? this.refs[`col-${x}`].isAllCellsOwned : false}
+                            >
+                                {x}
+                            </button>
+                        )
                     }
                 </div>
                 <Stage width='700' height='700' className="col-md-12 col-lg-10 offset-lg-1">

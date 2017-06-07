@@ -28,4 +28,9 @@ export default class Column extends Component {
             }
         }
     }
+
+    get isAllCellsOwned(){
+        let cell = this.refs[`cell-${this.props.x}-0`];
+        return cell.state.player !== null;
+    }
 }
