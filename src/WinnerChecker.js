@@ -1,18 +1,40 @@
 import {Observable} from 'rxjs/Rx';
 
 export default class WinnerChecker {
+    constructor(connectFourCanvas){
+        this.checkers = [
+            // new Checker(connectFourCanvas, CheckingDirection.VERTICAL_CHECK),
+            new Checker(connectFourCanvas, CheckingDirection.HORIZONTAL_CHECK),
+        ];
+    }
+
+    checkIfCurrentPlayerWins(){
+        return Observable.forkJoin(
+            this.checkers.map((checker) => checker.checkIfCurrentPlayerWins()))
+                .reduce((acc, curr) => {
+                    // console.log(`acc: ${acc}, curr: ${curr}`);
+                    return acc || curr;
+                }, false);
+            // .filter((hasWon) => {
+            //     console.log(`in filter hasWon: ${hasWon}`);
+            //     return hasWon === true
+            // })
+            // .defaultIfEmpty(false);
+    }
+}
+
+class Checker{
+    constructor(connectFourCanvas, checkingDirection){
+        this.connectFourCanvas = connectFourCanvas;
+        this.checkingDirection = checkingDirection;
+    }
 
     get ADJACENT_COUNT_WIN(){
-        return 4 - 1; //because of react's late update of state.
+        return 4 - 1; //because of react's late update of state. we need to subtract by one
     }
 
     hasAlreadyWon(adjacentCount){
         return adjacentCount === this.ADJACENT_COUNT_WIN;
-    }
-
-    constructor(connectFourCanvas){
-        this.connectFourCanvas = connectFourCanvas;
-        this.checkingDirection = CheckingDirection.VERTICAL_CHECK;
     }
 
     checkIfCurrentPlayerWins(){
@@ -26,16 +48,16 @@ export default class WinnerChecker {
 
         let c = this.connectFourCanvas;
         let p = c.props.currentPlayer;
-        //console.log(`d.endCoordinate.x: ${d.endCoordinate.x}, d.endCoordinate.y: ${d.endCoordinate.y}`);
+        // console.log(`d.endCoordinate.x: ${d.endCoordinate.x}, d.endCoordinate.y: ${d.endCoordinate.y}`);
         while(x !== d.endCoordinate.x || y !== d.endCoordinate.y){
-            //console.log(`x: ${x}, y: ${y}`);
+            // console.log(`x: ${x}, y: ${y}`);
             let cell = c.getColumn(x).getCell(y);
 
             if(cell.sameOwner(p)){
                 //console.log('same owner');
                 ++adjacentCount;
 
-                //console.log(`adjacentCount: ${adjacentCount}`);
+                // console.log(`adjacentCount: ${adjacentCount}`);
                 if(this.hasAlreadyWon(adjacentCount)){
                     hasWon = true;
                     break;
@@ -48,21 +70,20 @@ export default class WinnerChecker {
             x = x + d.xStep;
             y = y + d.yStep;
             if(d.shouldMoveToNextLine(x, y)){
-                //console.log('moving to next line');
+                // console.log('moving to next line');
                 d.moveToNextLine();
                 x = d.currentCoordinate.x;
                 y = d.currentCoordinate.y;
-                //console.log(`new vals x: ${x}, y: ${y}`);
+                console.log(`new vals x: ${x}, y: ${y}`);
             } else {
                 //console.log('stepping to next cell');
-                //console.log(`stepped vals x: ${x}, y: ${y}`);
-                //console.log(`will remain in loop: ${x !== d.endCoordinate.x || y !== d.endCoordinate.y}`);
+                // console.log(`stepped vals x: ${x}, y: ${y}`);
+                // console.log(`will remain in loop: ${x !== d.endCoordinate.x || y !== d.endCoordinate.y}`);
             }
         };
 
         return Observable.of(hasWon);
     }
-
 }
 
 class CheckingDirection{
@@ -90,15 +111,18 @@ class CheckingDirection{
         }
     );
 
-    // static HORIZONTAL_CHECK = new CheckingDirection(-1, 0,
-    //     new Coordinate(0, 5),
-    //     new Coordinate(0, 6),
-    //     () => {
-    //         let oldCoordinate = this.startCoordinate;
-    //         this.startCoordinate = new Coordinate(0, --oldCoordinate.y);
-    //     }
-    // );
-    //
+    static HORIZONTAL_CHECK = new CheckingDirection(1, 0,
+        {x:0, y:5},
+        {x:6, y:0},
+        function(){
+            let oldCoordinate = this.currentCoordinate;
+            this.currentCoordinate = new Coordinate(0, oldCoordinate.y - 1);
+        },
+        function(x, y){
+            return x === 7;
+        }
+    );
+
     // static FORWARD_SLASH_CHECK = new CheckingDirection(1, -1,
     //     new Coordinate(0, 3),
     //     new Coordinate(6, 2),
