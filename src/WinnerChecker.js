@@ -3,7 +3,7 @@ import {Observable} from 'rxjs/Rx';
 export default class WinnerChecker {
     constructor(connectFourCanvas){
         this.checkers = [
-            // new Checker(connectFourCanvas, CheckingDirection.VERTICAL_CHECK),
+            new Checker(connectFourCanvas, CheckingDirection.VERTICAL_CHECK),
             new Checker(connectFourCanvas, CheckingDirection.HORIZONTAL_CHECK),
         ];
     }
@@ -11,15 +11,8 @@ export default class WinnerChecker {
     checkIfCurrentPlayerWins(){
         return Observable.forkJoin(
             this.checkers.map((checker) => checker.checkIfCurrentPlayerWins()))
-                .reduce((acc, curr) => {
-                    // console.log(`acc: ${acc}, curr: ${curr}`);
-                    return acc || curr;
-                }, false);
-            // .filter((hasWon) => {
-            //     console.log(`in filter hasWon: ${hasWon}`);
-            //     return hasWon === true
-            // })
-            // .defaultIfEmpty(false);
+                .reduce((acc, curr) => curr.reduce((a, b) => a || b, false), false)
+                .delay(0);
     }
 }
 

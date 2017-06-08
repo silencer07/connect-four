@@ -47,7 +47,7 @@ export default class ConnectFourCanvas extends Component {
         //console.log("Checking if player won");
         this.winnerChecker
             .checkIfCurrentPlayerWins()
-            .subscribe((hasWon) => this.props.onDropTokenCallback(`${hasWon}` === 'true')); //weird workaround on a problem wherein true is not a boolean value
+            .subscribe((hasWon) => this.props.onDropTokenCallback(hasWon));
     }
 
     getColumn(index){
