@@ -5,8 +5,15 @@ import 'bootstrap/dist/css/bootstrap.css';
 import {Layer, Stage} from 'react-konva';
 import Column from "./Column";
 import _ from 'lodash';
+import WinnerChecker from './WinnerChecker';
 
 export default class ConnectFourCanvas extends Component {
+
+    constructor(){
+        super();
+        this.winnerChecker = new WinnerChecker(this);
+    }
+
     render() {
         return (
             <div className="row">
@@ -34,9 +41,16 @@ export default class ConnectFourCanvas extends Component {
     }
 
     dropToken(index){
-        console.log(`index: ${index}`);
-        let column = this.refs[`col-${index}`];
+        let column = this.getColumn(index);
         column.assignCellToPlayer(this.props.currentPlayer);
-        this.props.onDropTokenCallback();
+
+        //console.log("Checking if player won");
+        this.winnerChecker
+            .checkIfCurrentPlayerWins()
+            .subscribe((hasWon) => this.props.onDropTokenCallback(hasWon));
+    }
+
+    getColumn(index){
+        return this.refs[`col-${index}`];
     }
 }

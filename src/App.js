@@ -21,10 +21,9 @@ class App extends Component {
 
 
     cycleThroughPlayers(){
+        this.setState({currentPlayerIndex : ++this.state.currentPlayerIndex});
         if(this.state.currentPlayerIndex === this.state.players.length){
             this.setState({currentPlayerIndex : 0});
-        } else {
-            this.setState({currentPlayerIndex : ++this.state.currentPlayerIndex});
         }
     }
 
@@ -32,7 +31,17 @@ class App extends Component {
         return (
             <div>
                 <h1 className="col-12 col-sm-12 col-md-8 offset-md-2">Welcome to Connect Four</h1>
-                <ConnectFourCanvas currentPlayer={this.state.players[this.state.currentPlayerIndex]} onDropTokenCallback={() => this.cycleThroughPlayers()}/>
+                <ConnectFourCanvas currentPlayer={this.state.players[this.state.currentPlayerIndex]}
+                                   onDropTokenCallback={(playerHasWon) => {
+                                       if(playerHasWon){
+                                           alert(`${this.state.players[this.state.currentPlayerIndex].name} won`);
+                                           //reset canvas
+                                       } else {
+                                           console.log(`playerWon: ${playerHasWon}`);
+                                           this.cycleThroughPlayers();
+                                       }
+                                   }}
+                />
                 <footer className="card-footer">
                     This game was developed using react.js and react-konva libraries. This is for educational purposes
                     only

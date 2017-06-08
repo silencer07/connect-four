@@ -22,15 +22,19 @@ export default class Column extends Component {
     assignCellToPlayer(player){
         //the lowest cell with no player will take that cell;
         for(let y = this.ROW_COUNT - 1; y >= 0; y--){
-            let cell = this.refs[`cell-${this.props.x}-${y}`];
+            let cell = this.getCell(y);
             if(cell.setPlayer(player)){
                 break;
             }
         }
     }
 
+    getCell(y){
+        return this.refs[`cell-${this.props.x}-${y}`];
+    }
+
     get isAllCellsOwned(){
-        let cell = this.refs[`cell-${this.props.x}-0`];
+        let cell = this.getCell(0);
         return cell.state.player !== null;
     }
 }
