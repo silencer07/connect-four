@@ -30,6 +30,7 @@ export default class Cell extends Component {
 
     setPlayer(player){
         if(!this.state.player){
+            this.state.player = player; //workaround to issue where state is not updated immediately
             this.setState({player : player});
             return true;
         }
@@ -38,7 +39,7 @@ export default class Cell extends Component {
 
     sameOwner(player){
         //console.log(player.name);
-        console.log(this.state.player? this.state.player.name : 'none');
+        // console.log(this.state.player? this.state.player.name : 'none');
         return this.state.player === player;
     }
 }

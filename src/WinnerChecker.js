@@ -5,6 +5,7 @@ export default class WinnerChecker {
         this.checkers = [
             new Checker(connectFourCanvas, CheckingDirection.VERTICAL_CHECK),
             new Checker(connectFourCanvas, CheckingDirection.HORIZONTAL_CHECK),
+            new Checker(connectFourCanvas, CheckingDirection.FORWARD_SLASH_CHECK),
         ];
     }
 
@@ -23,7 +24,7 @@ class Checker{
     }
 
     get ADJACENT_COUNT_WIN(){
-        return 4 - 1; //because of react's late update of state. we need to subtract by one
+        return 4;
     }
 
     hasAlreadyWon(adjacentCount){
@@ -67,9 +68,9 @@ class Checker{
                 d.moveToNextLine();
                 x = d.currentCoordinate.x;
                 y = d.currentCoordinate.y;
-                console.log(`new vals x: ${x}, y: ${y}`);
+                // console.log(`new vals x: ${x}, y: ${y}`);
             } else {
-                //console.log('stepping to next cell');
+                // console.log('stepping to next cell');
                 // console.log(`stepped vals x: ${x}, y: ${y}`);
                 // console.log(`will remain in loop: ${x !== d.endCoordinate.x || y !== d.endCoordinate.y}`);
             }
@@ -116,18 +117,25 @@ class CheckingDirection{
         }
     );
 
-    // static FORWARD_SLASH_CHECK = new CheckingDirection(1, -1,
-    //     new Coordinate(0, 3),
-    //     new Coordinate(6, 2),
-    //     () => {
-    //         // let oldCoordinate = this.startCoordinate;
-    //         // this.startCoordinate = new Coordinate(0, --oldCoordinate.y);
-    //     },
-    //     (x, y) => {
-    //         return x === 6;
-    //     },
-    // );
-    //
+    static FORWARD_SLASH_CHECK = new CheckingDirection(1, -1,
+        {x: 0, y:3},
+        {x: 6, y:2},
+        function(){
+            let oldCoordinate = this.currentCoordinate;
+            let newCoordinate = new Coordinate(0, oldCoordinate.y + 1);
+
+            if(newCoordinate.y === 6){
+                newCoordinate.x = oldCoordinate.x + 1;
+                newCoordinate.y = 5;
+            }
+
+            this.currentCoordinate = newCoordinate;
+        },
+        function(x, y){
+            return y === -1 || x === 7;
+        },
+    );
+
     // static BACKWARD_SLASH_CHECK = new CheckingDirection(-1, -1,
     //     new Coordinate(6, 3),
     //     new Coordinate(0, 2),
