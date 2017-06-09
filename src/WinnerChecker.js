@@ -63,6 +63,7 @@ class Checker{
                 d.moveToNextLine();
                 x = d.currentCoordinate.x;
                 y = d.currentCoordinate.y;
+                adjacentCount = 0;
             }
         };
 
