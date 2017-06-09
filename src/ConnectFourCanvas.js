@@ -14,15 +14,20 @@ export default class ConnectFourCanvas extends Component {
         this.winnerChecker = new WinnerChecker(this);
     }
 
+    get COLUMN_COUNT() {
+        return 7;
+    }
+
     render() {
         return (
             <div className="row">
                 <div className="col-md-12 col-lg-10 offset-lg-1">
                     {
-                        _.range(7).map((x) =>
+                        _.range(this.COLUMN_COUNT).map((x) =>
                             <button key={`btn-${x}`} className="btn-place-token"
                                 onClick={() => this.dropToken(x)}
-                                disabled={this.refs[`col-${x}`] ? this.refs[`col-${x}`].isAllCellsOwned : false}
+                                disabled={this.getColumn(x) ? this.getColumn(x).isAllCellsOwned : false}
+                                style={{backgroundColor: this.props.currentPlayer.color}}
                             >
                                 {x}
                             </button>
@@ -32,7 +37,7 @@ export default class ConnectFourCanvas extends Component {
                 <Stage width='700' height='700' className="col-md-12 col-lg-10 offset-lg-1">
                     <Layer>
                         {
-                            _.range(7).map((x) => <Column x={x} key={`col-${x}`} ref={`col-${x}`}/>)
+                            _.range(this.COLUMN_COUNT).map((x) => <Column x={x} key={`col-${x}`} ref={`col-${x}`}/>)
                         }
                     </Layer>
                 </Stage>
@@ -45,8 +50,22 @@ export default class ConnectFourCanvas extends Component {
         column.assignCellToPlayer(this.props.currentPlayer);
 
         this.winnerChecker
-            .checkIfCurrentPlayerWins()
-            .subscribe((hasWon) => this.props.onDropTokenCallback(hasWon));
+            .checkIfCurrentPlayerWins().map((hasWon) =>{
+                if(!hasWon){
+                    let allOwned = true;
+                    for(let x = 0; x < this.COLUMN_COUNT; x++){
+                        allOwned = allOwned && this.getColumn(x).isAllCellsOwned;
+                    }
+
+                    if(allOwned){
+                        throw new Error("No more possible moves. Game is draw.");
+                    }
+                }
+                return hasWon;
+            }).subscribe(
+                (hasWon) => this.props.onDropTokenCallback(hasWon),
+                (error) => this.props.onGameDraw(error)
+        );
     }
 
     getColumn(index){

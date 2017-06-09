@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import ConnectFourCanvas from './ConnectFourCanvas';
-import Player from './Players';
+import Player from './Player';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 
 export default class App extends Component {
@@ -17,7 +17,8 @@ export default class App extends Component {
                 new Player('Player 2', 'yellow')
             ],
             currentPlayerIndex: 0,
-            playerHasWon: false
+            showModal: false,
+            errorMessage: null
         };
     }
 
@@ -36,22 +37,29 @@ export default class App extends Component {
                 <h1 className="col-12 col-sm-12 col-md-8 offset-md-2">Welcome to Connect Four</h1>
                 <ConnectFourCanvas currentPlayer={this.state.players[this.state.currentPlayerIndex]}
                                    onDropTokenCallback={(playerHasWon) => {
+                                       console.log(`playerHasWon: ${playerHasWon}`);
                                        if(playerHasWon){
-                                           this.setState({playerHasWon : playerHasWon});
+                                           this.setState({showModal : true});
                                        } else {
                                            this.cycleThroughPlayers();
                                        }
+                                   }}
+                                   onGameDraw={(error) => {
+                                       this.setState({
+                                           errorMessage : error.message,
+                                           showModal : true
+                                       });
                                    }}
                 />
                 <footer className="card-footer">
                     This game was developed using react.js and react-konva libraries. This is for educational purposes
                     only
                 </footer>
-                <Modal isOpen={this.state.playerHasWon} toggle="false">
+                <Modal isOpen={this.state.showModal} toggle={() => false}>
                     <ModalHeader>Game Finished</ModalHeader>
                     <ModalBody>
-                        <p style={{'text-align': 'center'}}>
-                            {this.state.players[this.state.currentPlayerIndex].name} wins!
+                        <p style={{textAlign: 'center'}}>
+                            {!this.state.errorMessage ? `${this.state.players[this.state.currentPlayerIndex].name} wins!` : this.state.errorMessage}
                         </p>
                     </ModalBody>
                 </Modal>
