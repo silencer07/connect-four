@@ -33,7 +33,6 @@ class App extends Component {
                 <h1 className="col-12 col-sm-12 col-md-8 offset-md-2">Welcome to Connect Four</h1>
                 <ConnectFourCanvas currentPlayer={this.state.players[this.state.currentPlayerIndex]}
                                    onDropTokenCallback={(playerHasWon) => {
-                                       // console.log(`HERE playerWon: ${playerHasWon}`);
                                        if(playerHasWon){
                                            alert(`${this.state.players[this.state.currentPlayerIndex].name} won`);
                                            //reset canvas

@@ -43,37 +43,26 @@ class Checker{
 
         let c = this.connectFourCanvas;
         let p = c.props.currentPlayer;
-        console.log(`d.endCoordinate.x: ${d.endCoordinate.x}, d.endCoordinate.y: ${d.endCoordinate.y}`);
         while(x !== d.endCoordinate.x || y !== d.endCoordinate.y){
-            console.log(`x: ${x}, y: ${y}`);
             let cell = c.getColumn(x).getCell(y);
 
             if(cell.sameOwner(p)){
-                //console.log('same owner');
                 ++adjacentCount;
 
-                // console.log(`adjacentCount: ${adjacentCount}`);
                 if(this.hasAlreadyWon(adjacentCount)){
                     hasWon = true;
                     break;
                 }
             } else {
-                //console.log('not same owner');
                 adjacentCount = 0;
             }
 
             x = x + d.xStep;
             y = y + d.yStep;
             if(d.shouldMoveToNextLine(x, y)){
-                console.log('moving to next line');
                 d.moveToNextLine();
                 x = d.currentCoordinate.x;
                 y = d.currentCoordinate.y;
-                console.log(`new vals x: ${x}, y: ${y}`);
-            } else {
-                console.log('stepping to next cell');
-                console.log(`stepped vals x: ${x}, y: ${y}`);
-                console.log(`will remain in loop: ${x !== d.endCoordinate.x || y !== d.endCoordinate.y}`);
             }
         };
 

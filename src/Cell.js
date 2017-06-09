@@ -38,8 +38,6 @@ export default class Cell extends Component {
     }
 
     sameOwner(player){
-        //console.log(player.name);
-        // console.log(this.state.player? this.state.player.name : 'none');
         return this.state.player === player;
     }
 }

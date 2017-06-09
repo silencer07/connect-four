@@ -44,7 +44,6 @@ export default class ConnectFourCanvas extends Component {
         let column = this.getColumn(index);
         column.assignCellToPlayer(this.props.currentPlayer);
 
-        //console.log("Checking if player won");
         this.winnerChecker
             .checkIfCurrentPlayerWins()
             .subscribe((hasWon) => this.props.onDropTokenCallback(hasWon));
