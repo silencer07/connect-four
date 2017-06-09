@@ -6,6 +6,7 @@ export default class WinnerChecker {
             new Checker(connectFourCanvas, CheckingDirection.VERTICAL_CHECK),
             new Checker(connectFourCanvas, CheckingDirection.HORIZONTAL_CHECK),
             new Checker(connectFourCanvas, CheckingDirection.FORWARD_SLASH_CHECK),
+            new Checker(connectFourCanvas, CheckingDirection.BACKWARD_SLASH_CHECK),
         ];
     }
 
@@ -42,9 +43,9 @@ class Checker{
 
         let c = this.connectFourCanvas;
         let p = c.props.currentPlayer;
-        // console.log(`d.endCoordinate.x: ${d.endCoordinate.x}, d.endCoordinate.y: ${d.endCoordinate.y}`);
+        console.log(`d.endCoordinate.x: ${d.endCoordinate.x}, d.endCoordinate.y: ${d.endCoordinate.y}`);
         while(x !== d.endCoordinate.x || y !== d.endCoordinate.y){
-            // console.log(`x: ${x}, y: ${y}`);
+            console.log(`x: ${x}, y: ${y}`);
             let cell = c.getColumn(x).getCell(y);
 
             if(cell.sameOwner(p)){
@@ -64,15 +65,15 @@ class Checker{
             x = x + d.xStep;
             y = y + d.yStep;
             if(d.shouldMoveToNextLine(x, y)){
-                // console.log('moving to next line');
+                console.log('moving to next line');
                 d.moveToNextLine();
                 x = d.currentCoordinate.x;
                 y = d.currentCoordinate.y;
-                // console.log(`new vals x: ${x}, y: ${y}`);
+                console.log(`new vals x: ${x}, y: ${y}`);
             } else {
-                // console.log('stepping to next cell');
-                // console.log(`stepped vals x: ${x}, y: ${y}`);
-                // console.log(`will remain in loop: ${x !== d.endCoordinate.x || y !== d.endCoordinate.y}`);
+                console.log('stepping to next cell');
+                console.log(`stepped vals x: ${x}, y: ${y}`);
+                console.log(`will remain in loop: ${x !== d.endCoordinate.x || y !== d.endCoordinate.y}`);
             }
         };
 
@@ -136,14 +137,24 @@ class CheckingDirection{
         },
     );
 
-    // static BACKWARD_SLASH_CHECK = new CheckingDirection(-1, -1,
-    //     new Coordinate(6, 3),
-    //     new Coordinate(0, 2),
-    //     () => {
-    //         // let oldCoordinate = this.startCoordinate;
-    //         // this.startCoordinate = new Coordinate(0, --oldCoordinate.y);
-    //     }
-    // );
+    static BACKWARD_SLASH_CHECK = new CheckingDirection(-1, -1,
+        {x: 6, y: 3},
+        {x: 0, y: 2},
+        function(){
+            let oldCoordinate = this.currentCoordinate;
+            let newCoordinate = new Coordinate(6, oldCoordinate.y + 1);
+
+            if(newCoordinate.y === 6){
+                newCoordinate.x = oldCoordinate.x - 1;
+                newCoordinate.y = 5;
+            }
+
+            this.currentCoordinate = newCoordinate;
+        },
+        function(x, y){
+            return x === -1 || y === -1;
+        }
+    );
 }
 
 class Coordinate {
