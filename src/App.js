@@ -4,8 +4,9 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import ConnectFourCanvas from './ConnectFourCanvas';
 import Player from './Players';
+import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 
-class App extends Component {
+export default class App extends Component {
 
     constructor() {
         super();
@@ -13,16 +14,18 @@ class App extends Component {
         this.state = {
             players : [
                 new Player('Player 1', 'red'),
-                new Player('Player 2', 'yellow'),
+                new Player('Player 2', 'yellow')
             ],
-            currentPlayerIndex: 0
+            currentPlayerIndex: 0,
+            playerHasWon: false
         };
     }
 
 
     cycleThroughPlayers(){
-        this.setState({currentPlayerIndex : ++this.state.currentPlayerIndex});
-        if(this.state.currentPlayerIndex === this.state.players.length){
+        if(this.state.currentPlayerIndex + 1 < this.state.players.length){
+            this.setState({currentPlayerIndex : ++this.state.currentPlayerIndex});
+        } else {
             this.setState({currentPlayerIndex : 0});
         }
     }
@@ -34,8 +37,7 @@ class App extends Component {
                 <ConnectFourCanvas currentPlayer={this.state.players[this.state.currentPlayerIndex]}
                                    onDropTokenCallback={(playerHasWon) => {
                                        if(playerHasWon){
-                                           alert(`${this.state.players[this.state.currentPlayerIndex].name} won`);
-                                           //reset canvas
+                                           this.setState({playerHasWon : playerHasWon});
                                        } else {
                                            this.cycleThroughPlayers();
                                        }
@@ -45,9 +47,16 @@ class App extends Component {
                     This game was developed using react.js and react-konva libraries. This is for educational purposes
                     only
                 </footer>
+                <Modal isOpen={this.state.playerHasWon} toggle="false">
+                    <ModalHeader>Game Finished</ModalHeader>
+                    <ModalBody>
+                        <p style={{'text-align': 'center'}}>
+                            {this.state.players[this.state.currentPlayerIndex].name} wins!
+                        </p>
+                    </ModalBody>
+                </Modal>
             </div>
         );
     }
 }
 
-export default App;
